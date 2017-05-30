@@ -46,61 +46,51 @@
 
 		//User Interaction
 		//View
+		function bindTwoWay($element, model){
+			$element.change(function(){
+				scope.$apply(function(){
+					var expr = model + ' = ' + $element.val().toInt();
+					scope.$eval(expr);
+				});
+			});
+			scope.$watch(model, function(newValue, oldValue){
+				$element.val(newValue);
+			});
+		}
+
+		function bindClick($element, expr){
+			$element.click(function(){
+				scope.$apply(function(){
+					scope.$eval(expr);
+				});
+			});
+		}
+
+		function bindOneWay($element, model){
+			scope.$watch(model, function(newValue, oldValue){
+				$element.html(newValue);
+			});
+		}
+
 		$(document).ready(function(){
 			window.calculator = new SalaryCalculator();
 			scope.calculator = window.calculator;
 
 			//React to user actions 
-			$('#txtBasic').change(function(){
-				scope.$apply(function(){
-					calculator.basic = $('#txtBasic').val().toInt();
-				});
-			});
+			
+			bindTwoWay($('#txtBasic'), 'calculator.basic');
+			
+			bindTwoWay($('#txtHra'), 'calculator.hra');
 
-			$('#txtHra').change(function(){
-				scope.$apply(function(){
-					calculator.hra = $('#txtHra').val().toInt();
-				});
-			});
+			bindTwoWay($('#txtDa'), 'calculator.da');
 
-			$('#txtDa').change(function(){
-				scope.$apply(function(){
-					calculator.da = $('#txtDa').val().toInt();
-				});
-			});
+			bindTwoWay($('#rangeTax'), 'calculator.tax');
 
-			$('#rangeTax').change(function(){
-				scope.$apply(function(){
-					calculator.tax = $('#rangeTax').val().toInt();
-				});
-			});
+			bindClick($('#btnCalculate'), 'calculator.calculate()');
 
-			$('#btnCalculate').click(function(){
-				scope.$apply(function(){
-					calculator.calculate();
-				});
-			});
+			bindOneWay($('#divResult'), 'calculator.salary');
 
-			//React to model changes
-			scope.$watch('calculator.salary', function(newValue, oldValue){
-				$('#divResult').html(newValue);
-			});
-
-			scope.$watch('calculator.basic', function(newValue, oldValue){
-				$('#txtBasic').val(newValue);
-			});
-			scope.$watch('calculator.hra', function(newValue, oldValue){
-				$('#txtHra').val(newValue);
-			});
-			scope.$watch('calculator.da', function(newValue, oldValue){
-				$('#txtDa').val(newValue);
-			});
-			scope.$watch('calculator.tax', function(newValue, oldValue){
-				$('#rangeTax').val(newValue);
-			});
-			scope.$watch('calculator.tax', function(newValue, oldValue){
-				$('#spanTax').html(newValue);
-			});
+			bindOneWay($('#spanTax'), 'calculator.tax');
 		});
 	</script>
 </head>
