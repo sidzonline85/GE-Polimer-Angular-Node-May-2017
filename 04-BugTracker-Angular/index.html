@@ -54,20 +54,39 @@
 	<script>
 		var bugTrackerApp = angular.module('bugTrackerApp', []);
 
-		bugTrackerApp.controller('bugsController', function($scope){
-			$scope.bugs = [];
+		bugTrackerApp.value('defaultBugName' , '[DEFAULT BUG]');
+
+		bugTrackerApp.factory('bugOperations' , function(defaultBugName){
+			return {
+				createNew : function(bugName){
+					return {
+						name : bugName || defaultBugName,
+						isClosed : false
+					}
+				},
+				toggle : function(bug){
+					bug.isClosed = !bug.isClosed;
+				}
+			};
+		});
+
+		bugTrackerApp.controller('bugsController', function($scope, bugOperations){
+			
+
+			$scope.bugs = [
+				bugOperations.createNew('Server communication failure'),
+				bugOperations.createNew('Data validation error'),
+				bugOperations.createNew('User access not granted'),
+				bugOperations.createNew('Application not responsive to user actions')
+			];
 
 			$scope.addNew = function(bugName){
-				var newBug = {
-					name : bugName,
-					isClosed : false
-				};
-
+				var newBug = bugOperations.createNew(bugName);
 				$scope.bugs.push(newBug);
 			};
 
 			$scope.toggle = function(bug){
-				bug.isClosed = !bug.isClosed;
+				bugOperations.toggle(bug);
 			};
 
 			$scope.removeClosed = function(){
@@ -85,6 +104,8 @@
 			};
 
 		});
+
+
 	</script>
 </head>
 <body ng-app="bugTrackerApp">
@@ -97,11 +118,12 @@
 			<span> / </span>
 			<span>{{bugs.length}}</span>
 		</section>
-		<section class="search">
+		<section class="search" ng-init="searchBug.isClosed=''">
 			<label for="">Search :</label>
-			<input type="text" name="" id="">
-			<label for="">Completed ? :</label>
-			<input type="checkbox" name="" id="">
+			<input type="text" ng-model="searchBug.name">
+			<label for="">Closed ? :</label>
+			<input type="checkbox" ng-model="searchBug.isClosed">
+			<input type="button" value="Show All" ng-click="searchBug.isClosed=''" ng-hide="searchBug.isClosed === ''">
 		</section>
 		<section class="sort">
 			<label for="">Order By :</label>
@@ -119,7 +141,7 @@
 		</section>
 		<section class="list">
 			<ol>
-				<li ng-repeat="bug in bugs track by $index">
+				<li ng-repeat="bug in (bugs | filter:searchBug) ">
 					<span class="bugname" ng-click="toggle(bug)" ng-class="{closed : bug.isClosed}">{{bug.name}}</span>
 					<div class="datetime">[Created At]</div>
 				</li>
