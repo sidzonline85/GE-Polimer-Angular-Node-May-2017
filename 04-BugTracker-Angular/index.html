@@ -44,8 +44,8 @@
 		3. Toggle the 'closed' status of a bug						- done
 		4. Remove closed bugs										- done
 		5. Display stats ( total # of bugs / # of closed bugs )		- done
-		6. Search for bugs
-		7. Sort the bugs
+		6. Search for bugs											- done
+		7. Sort the bugs											- done
 		8. Improvise bug display
 		9. Persist the bugs in localStorage
 		10. Display createdAt
@@ -105,7 +105,11 @@
 
 		});
 
-
+		bugTrackerApp.filter('trimText',  function(/* deps for the filter goes here*/){
+			return  function(data){
+				return data.length < 30 ? data : data.substr(0,30) + '...';
+			};
+		});
 	</script>
 </head>
 <body ng-app="bugTrackerApp">
@@ -127,12 +131,12 @@
 		</section>
 		<section class="sort">
 			<label for="">Order By :</label>
-			<select name="" id="">
+			<select ng-model="sortBugBy">
 				<option value="name">Name</option>
 				<option value="isClosed">Status</option>
 			</select>
 			<label for="">Descending ? :</label>
-			<input type="checkbox" name="" id="">
+			<input type="checkbox" ng-model="sortBugOrder">
 		</section>
 		<section class="edit">
 			<label for="">Bug Name :</label>
@@ -141,8 +145,10 @@
 		</section>
 		<section class="list">
 			<ol>
-				<li ng-repeat="bug in (bugs | filter:searchBug) ">
-					<span class="bugname" ng-click="toggle(bug)" ng-class="{closed : bug.isClosed}">{{bug.name}}</span>
+				<li ng-repeat="bug in (bugs | filter:searchBug | orderBy:sortBugBy:sortBugOrder) ">
+					<span class="bugname" ng-click="toggle(bug)" ng-class="{closed : bug.isClosed}">
+						{{bug.name | trimText}}
+					</span>
 					<div class="datetime">[Created At]</div>
 				</li>
 				
