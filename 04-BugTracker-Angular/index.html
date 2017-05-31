@@ -46,8 +46,22 @@
 		5. Display stats ( total # of bugs / # of closed bugs )		- done
 		6. Search for bugs											- done
 		7. Sort the bugs											- done
-		8. Improvise bug display
+		8. Improvise bug display									- done
 		9. Persist the bugs in localStorage
+			window.localStorage
+			====================
+			- key/value store
+			- both key and value must be strings
+			- key has to be unique (bug.id)
+			- use angular.toJson() and angular.fromJson() for searialization and deserialization
+			APIs
+			----
+				* setItem(key, value)
+				* getItem(key)
+				* removeItek(key)
+				* clear()
+				* key(index)
+				* length
 		10. Display createdAt
 	</script>
 	<script src="angular.js"></script>
@@ -74,10 +88,7 @@
 			
 
 			$scope.bugs = [
-				bugOperations.createNew('Server communication failure'),
-				bugOperations.createNew('Data validation error'),
-				bugOperations.createNew('User access not granted'),
-				bugOperations.createNew('Application not responsive to user actions')
+				
 			];
 
 			$scope.addNew = function(bugName){
@@ -94,15 +105,6 @@
 					if ($scope.bugs[index].isClosed)
 						$scope.bugs.splice(index, 1);
 			};
-
-			$scope.getClosedCount = function(){
-				var closedCount = 0;
-				for(var index = 0; index < $scope.bugs.length; index++)
-					if ($scope.bugs[index].isClosed)
-						++closedCount;
-				return closedCount;
-			};
-
 		});
 
 		bugTrackerApp.filter('trimText',  function(/* deps for the filter goes here*/){
@@ -110,6 +112,24 @@
 				return data.length < 30 ? data : data.substr(0,30) + '...';
 			};
 		});
+
+		/*bugTrackerApp.filter('closedCount', function(){
+			return function(bugs){
+				
+				var closedCount = 0;
+				for(var index = 0; index < bugs.length; index++)
+					if (bugs[index].isClosed)
+						++closedCount;
+				return closedCount;
+			}
+		})*/
+
+		bugTrackerApp.filter('closedCount', function($filter){
+			var builtInFilter = $filter('filter');
+			return function(bugs){
+				return builtInFilter(bugs, {isClosed : true}).length;
+			}
+		})
 	</script>
 </head>
 <body ng-app="bugTrackerApp">
@@ -118,7 +138,7 @@
 	<div class="content" ng-controller="bugsController">
 
 		<section class="stats">
-			<span class="closed">{{getClosedCount()}}</span>
+			<span class="closed">{{ bugs | closedCount }}</span>
 			<span> / </span>
 			<span>{{bugs.length}}</span>
 		</section>
