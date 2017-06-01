@@ -70,7 +70,7 @@
 
 		bugTrackerApp.value('defaultBugName' , '[DEFAULT BUG]');
 
-		bugTrackerApp.factory('bugOperations' , function(defaultBugName){
+		/*bugTrackerApp.factory('bugOperations' , function(defaultBugName){
 			return {
 				createNew : function(id, bugName){
 					return {
@@ -83,6 +83,22 @@
 					bug.isClosed = !bug.isClosed;
 				}
 			};
+		});*/
+
+		bugTrackerApp.service('bugOperations' , function(defaultBugName){
+			
+			this.createNew = function(id, bugName){
+				return {
+					id : id,
+					name : bugName || defaultBugName,
+					isClosed : false
+				}
+			};
+
+			this.toggle = function(bug){
+				bug.isClosed = !bug.isClosed;
+			};
+			
 		});
 
 		bugTrackerApp.factory('bugStorage', function(bugOperations){
