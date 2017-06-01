@@ -29,9 +29,30 @@ var app = (function(){
 		});
 	}
 
+	var addAsyncEvents = (function(){
+		var callbacks = [];
+		function subscribe(callback){
+			callbacks.push(callback);
+		};
+
+		function process(x,y){
+			console.log(`		[@Service] processing ${x} and ${y}`);
+			setTimeout(function(){
+				var result = x + y;
+				console.log(`		[@Service] returning result`);
+				callbacks.forEach(callback => callback(result));
+			}, 5000);
+		}
+		return {
+			subscribe : subscribe,
+			add : process
+		}
+	})();
+
 
 	return {
 		addSyncClient : addSyncClient,
-		addAsyncClient : addAsyncClient
+		addAsyncClient : addAsyncClient,
+		addAsyncEvents : addAsyncEvents
 	}
 })();
