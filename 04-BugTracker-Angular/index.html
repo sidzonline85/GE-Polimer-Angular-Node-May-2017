@@ -47,7 +47,7 @@
 		6. Search for bugs											- done
 		7. Sort the bugs											- done
 		8. Improvise bug display									- done
-		9. Persist the bugs in localStorage
+		9. Persist the bugs in localStorage							- done
 			window.localStorage
 			====================
 			- key/value store
@@ -138,27 +138,43 @@
 			}
 		});
 
-		bugTrackerApp.controller('bugsController', function($scope, bugStorage){
+		bugTrackerApp.controller('bugsController', function($scope, bugStorage, $http, bugOperations){
 			
 
-			$scope.bugs = bugStorage.getAll();
+			$scope.bugs = [];
+
+			$http
+				.get('http://localhost:3000/bugs')
+				.then(response => response.data)
+				.then(bugs => $scope.bugs = bugs);
 
 			$scope.addNew = function(bugName){
-				var newBug = bugStorage.addNew(bugName);
-				$scope.bugs.push(newBug);
+				var newBugData = bugOperations.createNew(0, bugName);
+				$http.post('http://localhost:3000/bugs', newBugData)
+					.then(response => response.data)
+					.then(newBug => $scope.bugs.push(newBug));
 			};
 
 			$scope.toggle = function(bug){
-				bugStorage.toggle(bug);
+				bugOperations.toggle(bug);
+				$http.put(`http://localhost:3000/bugs/${bug.id}`, bug);
+
 			};
 
 			$scope.removeClosed = function(){
-				for(var index = $scope.bugs.length-1; index >= 0; index--)
+				
+				for(var index = $scope.bugs.length-1; index >= 0; index--){
 					if ($scope.bugs[index].isClosed){
-						bugStorage.remove($scope.bugs[index]);
-						$scope.bugs.splice(index, 1);
+						$http.delete(`http://localhost:3000/bugs/${$scope.bugs[index].id}`)
+							.then((function(idx){
+								return function(response){
+									return $scope.bugs.splice(idx, 1);
+								}
+							})(index));
 					}
+				}
 			};
+
 		});
 
 		bugTrackerApp.filter('trimText',  function(/* deps for the filter goes here*/){
