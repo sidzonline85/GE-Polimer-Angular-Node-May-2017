@@ -7,8 +7,13 @@
       "createdAt": "2017-02-25T10:28:17.569Z"
     },
     {
-      "id": 10,
-      "name": "Bug - 2",
+      "id": 14,
+      "name": "bug - 2",
+      "isClosed": false
+    },
+    {
+      "id": 15,
+      "name": "bug - 5",
       "isClosed": false
     }
   ],
