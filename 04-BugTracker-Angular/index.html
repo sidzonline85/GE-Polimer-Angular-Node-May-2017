@@ -72,8 +72,9 @@
 
 		bugTrackerApp.factory('bugOperations' , function(defaultBugName){
 			return {
-				createNew : function(bugName){
+				createNew : function(id, bugName){
 					return {
+						id : id,
 						name : bugName || defaultBugName,
 						isClosed : false
 					}
@@ -84,26 +85,63 @@
 			};
 		});
 
-		bugTrackerApp.controller('bugsController', function($scope, bugOperations){
+		bugTrackerApp.factory('bugStorage', function(bugOperations){
+			var currentBugId = 0;
+			var storage = window.localStorage;
+
+			function getAllBugs(){
+				var result = [];
+				for(var i=0; i < storage.length; i++){
+					var data = storage.getItem(storage.key(i));
+					var bug = angular.fromJson(data);
+					currentBugId = currentBugId > bug.id ? currentBugId : bug.id;
+					result.push(bug);
+				}
+				return result;
+			}
+			function addNewBug(bugName){
+				var newBug = bugOperations.createNew(++currentBugId, bugName);
+				saveBug(newBug);
+				return newBug;
+			}
+			function toggleBug(bug){
+				bugOperations.toggle(bug);
+				saveBug(bug);
+			}
+			function saveBug(bug){
+				storage.setItem(bug.id, angular.toJson(bug));
+			}
+			function removeBug(bug){
+				storage.removeItem(bug.id);
+			}
+			return {
+				getAll : getAllBugs,
+				addNew : addNewBug,
+				toggle : toggleBug,
+				remove : removeBug,
+			}
+		});
+
+		bugTrackerApp.controller('bugsController', function($scope, bugStorage){
 			
 
-			$scope.bugs = [
-				
-			];
+			$scope.bugs = bugStorage.getAll();
 
 			$scope.addNew = function(bugName){
-				var newBug = bugOperations.createNew(bugName);
+				var newBug = bugStorage.addNew(bugName);
 				$scope.bugs.push(newBug);
 			};
 
 			$scope.toggle = function(bug){
-				bugOperations.toggle(bug);
+				bugStorage.toggle(bug);
 			};
 
 			$scope.removeClosed = function(){
 				for(var index = $scope.bugs.length-1; index >= 0; index--)
-					if ($scope.bugs[index].isClosed)
+					if ($scope.bugs[index].isClosed){
+						bugStorage.remove($scope.bugs[index]);
 						$scope.bugs.splice(index, 1);
+					}
 			};
 		});
 
