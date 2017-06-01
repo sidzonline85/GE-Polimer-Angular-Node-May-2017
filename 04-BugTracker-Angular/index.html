@@ -175,9 +175,10 @@
 				.then(bugs => $scope.bugs = bugs);
 
 			$scope.addNew = function(bugName){
-				bugService
+				console.log('a new bug is added ', bugName);
+				/*bugService
 					.addNew(bugName)
-					.then(newBug => $scope.bugs.push(newBug));
+					.then(newBug => $scope.bugs.push(newBug));*/
 			};
 
 			$scope.toggle = function(bug){
@@ -218,7 +219,45 @@
 			return function(bugs){
 				return builtInFilter(bugs, {isClosed : true}).length;
 			}
-		})
+		});
+
+		bugTrackerApp.directive('bugStats', function(){
+			return {
+				scope : {
+					data : '='
+				},
+				template : `
+					<section class="stats">
+						<span class="closed">{{ data | closedCount }}</span>
+						<span> / </span>
+						<span>{{data.length}}</span>
+					</section>
+				`
+			};
+		});
+
+		bugTrackerApp.directive('bugEdit', function(){
+			return {
+				scope : {
+					newBugAdded : '&'
+				},
+				template : `
+					<section class="edit">
+						<label for="">Bug Name :</label>
+						<input type="text" ng-model="newBugName">
+						<input type="button" value="Add New" ng-click="addNew(newBugName)">
+					</section>
+				`,
+				controller : function($scope){
+					$scope.addNew = function(newBugName){
+						console.log('$scope.addNew');
+						$scope.newBugAdded({newBugName : newBugName});
+					};
+				}
+			}
+		});
+
+
 	</script>
 </head>
 <body ng-app="bugTrackerApp">
@@ -226,11 +265,8 @@
 	<hr>
 	<div class="content" ng-controller="bugsController">
 
-		<section class="stats">
-			<span class="closed">{{ bugs | closedCount }}</span>
-			<span> / </span>
-			<span>{{bugs.length}}</span>
-		</section>
+		<bug-stats data="bugs"></bug-stats>
+
 		<section class="search" ng-init="searchBug.isClosed=''">
 			<label for="">Search :</label>
 			<input type="text" ng-model="searchBug.name">
@@ -247,11 +283,9 @@
 			<label for="">Descending ? :</label>
 			<input type="checkbox" ng-model="sortBugOrder">
 		</section>
-		<section class="edit">
-			<label for="">Bug Name :</label>
-			<input type="text" ng-model="newBugName">
-			<input type="button" value="Add New" ng-click="addNew(newBugName)">
-		</section>
+		
+		<bug-edit new-bug-added="addNew(newBugName)"></bug-edit>
+		
 		<section class="list">
 			<ol>
 				<li ng-repeat="bug in (bugs | filter:searchBug | orderBy:sortBugBy:sortBugOrder) ">

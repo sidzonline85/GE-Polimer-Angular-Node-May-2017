@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Data Error",
-      "isClosed": false,
+      "isClosed": true,
       "createdAt": "2017-02-25T10:28:17.569Z"
     },
     {
