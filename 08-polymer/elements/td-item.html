@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="td-input.html">
+<link rel="import" href="td-star.html">
 
 <dom-module id="td-item">
 	<template strip-whitespace>
@@ -9,6 +10,8 @@
 							 checked="{{item.completed::change}}">
 				<label>{{item.title}}</label>
 				<button class="destroy" on-tap="_destroyAction"></button>
+				<br>
+				<td-star max="10" readonly="true"></td-star>
 			</div>
 		</template>
 		<template is="dom-if" if="{{editing}}" strip-whitespace>
