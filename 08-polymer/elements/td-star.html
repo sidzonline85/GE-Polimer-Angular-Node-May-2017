@@ -1,0 +1,105 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+
+<dom-module id="td-star">
+	<style>
+		.rating{
+		  color: #a9a9a9;
+		  margin: 0;
+		  padding: 0;
+		}
+
+		ul.rating {
+		  display: inline-block;
+		}
+
+		.rating li {
+		  list-style-type: none;
+		  display: inline-block;
+		  padding: 1px;
+		  text-align: center;
+		  font-weight: bold;
+		  cursor: pointer;
+		}
+
+		.rating .filled {
+		  color: #21568b;
+		}
+	</style>
+	<template>
+		<ul class="rating"> 
+			<template is="dom-repeat" items="{{stars}}">
+				
+				<template is="dom-if" if="{{item.filled}}">
+	          		<li class="filled" on-click="_starClick"> 
+	            		&#x2605; 
+	          		</li> 
+	          	</template>
+	          	<template is="dom-if" if="{{!item.filled}}">
+	          		<li on-click="_starClick"> 
+	            		&#x2605; 
+	          		</li> 
+	          	</template>
+           </template>
+        </ul>
+	</template>
+	<script>
+		(function () {
+			'use strict';
+
+			Polymer({
+				is: 'td-star',
+
+				properties: {
+					ratingValue: {
+						type: Number
+					},
+					max : {
+						type : Number
+					},
+					readonly : {
+						type : Boolean,
+						value : false
+					},
+					item: {
+						type: Object,
+						value: function () { return {}; }
+					},
+					stars : {
+						type : Array,
+						value : [
+							{id : 1, filled : true},
+							{id : 2, filled : true},
+							{id : 3, filled : true},
+							{id : 4, filled : false},
+						]
+					}
+				},
+				attached : function(){
+					console.log('dom attached');
+				},
+				
+				_toggle : function(index) {
+		          if (this.readonly && this.readonly === 'true') {
+		            return;
+		          }
+		          this.ratingValue = index + 1;
+		          //this.onRatingSelected({rating: index + 1});
+		          this.fire('rating-selected', {rating : index + 1});
+		        },
+
+		        _starClick : function(evtArg){
+		        	window.evtArg = evtArg;
+		        	console.log('a star is clicked');
+		        },
+
+		        _updateStars : function() {
+		          this.stars = [];
+		          for (var  i = 0; i < this.max; i++) {
+		            this.stars.push({id : i, filled: i < this.ratingValue});
+		          }
+		        }
+			});
+		})();
+	</script>
+</dom-module>

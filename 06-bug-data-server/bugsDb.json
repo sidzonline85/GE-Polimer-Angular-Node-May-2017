@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "id": 1,
+      "name": "Data Error",
+      "isClosed": true,
+      "createdAt": "2017-02-25T10:28:17.569Z"
+    },
+    {
+      "id": 14,
+      "name": "bug - 2",
+      "isClosed": false
+    },
+    {
+      "id": 15,
+      "name": "bug - 5",
+      "isClosed": false
+    }
+  ],
+  "employees": [
+    {
+      "id": 1,
+      "name": "Magesh"
+    },
+    {
+      "id": 2,
+      "name": "Suresh"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Directive Demo</title>
+	<script src="angular.js"></script>
+	<script>
+		var myApp = angular.module('myApp', []);
+		/*myApp.directive('greeting', function(){
+			return function($scope, $element, $attr){
+				$scope.$watch('msg', function(newValue){
+					$element.html('<h1>' + $scope.msg + '</h1>');	
+				});
+
+				$element.on('click', function(){
+					$scope.msg = '';
+					$scope.$apply();
+				});
+			};
+		});*/
+
+		myApp.directive('greeting', function(){
+			return {
+				restrict : 'EA',
+				scope : {
+					msg : '=',
+					cleared : '&'
+				},
+				template : '<h1>{{msg}}</h1>',
+
+				link : function($scope, $element, $attr){
+					/*$scope.$watch('msg', function(newValue){
+						$element.html('<h1>' + $scope.msg + '</h1>');	
+					});*/
+
+					$element.on('click', function(){
+						$scope.msg = '';
+						$scope.cleared();
+						$scope.$apply();
+					});
+				}
+			}
+		});
+
+		myApp.run(function($rootScope){
+			$rootScope.message = 'Have a nice day!';
+
+			$rootScope.onMessageCleared = function(){
+				console.log('message is cleared');
+			};
+		});
+	</script>
+</head>
+<body ng-app='myApp'>
+	<div>
+		<div greeting msg="message" cleared="onMessageCleared()"></div>
+	</div>
+</body>
+</html>
